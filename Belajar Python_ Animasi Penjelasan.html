@@ -1,0 +1,227 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Belajar Python: Animasi Penjelasan</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@500;800&family=JetBrains+Mono:wght@400;700&display=swap">
+<style>
+:root{--bg:#EAF1F8;--ink:#14213D;--mut:#51607F;--card:#fff;--blue:#3776AB;--yel:#FFD43B;--code:#14213D;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media(prefers-color-scheme:dark){:root:not([data-theme="light"]){--bg:#0F1A30;--ink:#E6ECF8;--mut:#9AA9C7;--card:#18264A;--code:#0A1224}}
+:root[data-theme="dark"]{--bg:#0F1A30;--ink:#E6ECF8;--mut:#9AA9C7;--card:#18264A;--code:#0A1224}
+*{box-sizing:border-box}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--ink);font:500 16px/1.5 "Bricolage Grotesque",system-ui,sans-serif}
+.app{max-width:1000px;margin:0 auto;padding:18px 16px 24px}
+header{display:flex;justify-content:space-between;align-items:baseline;gap:12px}
+h1{font-size:clamp(26px,5vw,40px);line-height:1.1;margin:0;font-weight:800}
+#cnt{color:var(--mut);font-variant-numeric:tabular-nums}
+.dots{display:flex;gap:6px;margin:14px 0}
+.dots button{flex:1;height:8px;border:0;border-radius:4px;background:var(--mut);opacity:.35;cursor:pointer;padding:0}
+.dots button.a{background:var(--blue);opacity:1}
+.dots button.d{opacity:.8;background:var(--blue)}
+.stage{display:grid;grid-template-columns:1.1fr 1fr;gap:18px;min-height:340px}
+@media(max-width:760px){.stage{grid-template-columns:1fr;min-height:0}}
+.code{background:var(--code);color:#E6ECF8;border-radius:8px;padding:16px;font:400 14px/1.7 "JetBrains Mono",ui-monospace,monospace;overflow-x:auto;min-height:150px;align-content:start}
+.l{white-space:pre}
+.code i{color:#FFD43B;font-style:normal}.code b{color:#9BE0A0;font-weight:400}.code u{color:#7CC4FF;text-decoration:none}
+.o{color:#FFB86B}.cm{color:#8A97B5}
+.viz{display:flex;flex-direction:column;gap:10px;justify-content:center}
+.r{opacity:0;transform:translateY(14px) scale(.92);transition:opacity .45s calc(var(--d,0)*.3s),transform .6s calc(var(--d,0)*.3s) cubic-bezier(.34,1.56,.64,1)}
+.l.r{transform:translateX(-18px)}
+.bx.r{transform:translateX(26px) rotate(2deg)}
+.sq.r{transform:translateY(-34px) scale(.6)}
+.fin.r{transform:scale(.5)}
+.logo.r{transform:scale(.2) rotate(-90deg);align-self:center}
+.r.on{opacity:1;transform:none}
+.bx.on{animation:bob 3.2s ease-in-out infinite alternate}
+@keyframes bob{to{translate:0 -4px}}
+.logo.on{animation:wob 3s ease-in-out infinite alternate}
+@keyframes wob{from{rotate:-6deg}to{rotate:8deg;scale:1.06}}
+.bx{background:var(--card);border:2px solid var(--ink);border-radius:6px;padding:10px 14px;box-shadow:4px 4px 0 var(--blue)}
+.bx small{display:block;color:var(--mut);font:700 12px "JetBrains Mono",monospace}
+.bx strong{display:block;font-size:30px;line-height:1.1}
+.hl{background:var(--yel);color:#14213D;box-shadow:4px 4px 0 var(--ink)}.hl small{color:#3b3a20}
+.dim{opacity:.55!important}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.sq{min-width:52px;text-align:center;font-size:22px;font-weight:800}
+.flow{display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;font-size:20px}
+.ce{display:inline-block;border:2px solid var(--ink);border-radius:4px;padding:2px 10px;margin-right:6px;font-size:15px}
+.ce small{display:inline;margin-right:6px}
+h4{margin:0;font-size:15px;color:var(--mut)}
+.fin{font-size:clamp(28px,6vw,44px);font-weight:800;text-align:center;color:var(--blue)}
+#cap{margin:18px 0 14px;font-size:clamp(18px,3vw,24px);line-height:1.45;min-height:3.6em}
+.ctl{display:flex;gap:10px;flex-wrap:wrap}
+.ctl button{font:800 16px "Bricolage Grotesque",system-ui,sans-serif;padding:12px 20px;border:2px solid var(--ink);border-radius:6px;background:var(--card);color:var(--ink);cursor:pointer;min-height:48px}
+.ctl button.p{background:var(--yel);color:#14213D;flex:1;min-width:120px}
+.ctl button:focus-visible,.dots button:focus-visible,#go:focus-visible{outline:3px solid var(--blue);outline-offset:2px}
+#ov{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;text-align:center;padding:24px;z-index:9}
+#ov p{max-width:420px;color:var(--mut);margin:0}
+#go{font:800 20px "Bricolage Grotesque",system-ui,sans-serif;padding:16px 36px;border:2px solid var(--ink);border-radius:6px;background:var(--yel);color:#14213D;cursor:pointer;box-shadow:4px 4px 0 var(--ink)}
+.sw{position:relative;overflow:hidden;padding:0 6px 6px 0}
+#wipe{position:absolute;inset:0;background:var(--yel);transform:translateX(-101%);pointer-events:none;z-index:2}
+#wipe.go{animation:wipe .7s cubic-bezier(.7,0,.3,1)}
+@keyframes wipe{0%{transform:translateX(calc(var(--dir,1)*-101%))}35%,55%{transform:none}100%{transform:translateX(calc(var(--dir,1)*101%))}}
+.stage.go{animation:enter .5s .25s cubic-bezier(.2,.8,.2,1) both}
+@keyframes enter{from{opacity:0;transform:translateX(var(--dx,50px))}}
+#ttl.go{animation:ttl .5s cubic-bezier(.2,.8,.2,1) both}
+@keyframes ttl{from{opacity:0;transform:translateY(-14px)}}
+.win{border:2px solid var(--ink);border-radius:8px;overflow:hidden;background:var(--code);color:#E6ECF8;box-shadow:4px 4px 0 var(--blue)}
+.wb{display:flex;gap:6px;align-items:center;padding:6px 10px;background:var(--card);color:var(--ink);border-bottom:2px solid var(--ink);font:700 12px 'JetBrains Mono',monospace}
+.wb span{width:10px;height:10px;border-radius:50%;background:#FF6B6B}.wb span:nth-child(2){background:var(--yel)}.wb span:nth-child(3){background:#6BCB77}.wb em{margin-left:8px;font-style:normal}
+.wc{padding:10px 12px;font:400 13px/1.6 'JetBrains Mono',monospace;white-space:pre}
+.wc.lt{background:#fff;color:#14213D;white-space:normal;font:500 14px/1.6 'Bricolage Grotesque',sans-serif}
+.btn{display:inline-block;margin-top:8px;background:var(--blue);color:#fff;padding:4px 12px;border-radius:4px;font-weight:800}
+.ck{display:inline-block;width:14px;height:14px;border:2px solid #14213D;vertical-align:-2px;margin-right:6px;position:relative}
+.on .ck::after{content:'';position:absolute;left:2px;top:-5px;width:5px;height:11px;border:solid #3776AB;border-width:0 3px 3px 0;transform:rotate(40deg);animation:tick .4s .8s both}
+@keyframes tick{from{opacity:0;transform:rotate(40deg) scale(0)}}
+.ty{display:inline-block;overflow:hidden;white-space:nowrap;width:0;vertical-align:bottom}
+.on .ty{animation:ty 1.2s steps(var(--n)) .4s forwards}
+@keyframes ty{to{width:calc(var(--n)*1ch)}}
+.dl{opacity:0}.on .dl{animation:fi .1s 1.8s forwards}
+@keyframes fi{to{opacity:1}}
+.cur{display:inline-block;width:8px;height:14px;background:#FFD43B;vertical-align:-2px;animation:blink 1s steps(2) infinite}
+@keyframes blink{50%{opacity:0}}
+.ph{width:130px;height:230px;border:3px solid var(--ink);border-radius:22px;background:var(--card);padding:8px 6px 6px;box-shadow:4px 4px 0 var(--blue)}
+.nt{width:36px;height:5px;border-radius:3px;background:var(--ink);margin:0 auto 6px}
+.ios .nt{width:50px;height:12px;border-radius:8px;margin-bottom:3px}
+.sc{height:calc(100% - 12px);border-radius:12px;background:var(--code);color:#E6ECF8;font:400 10px/1.5 'JetBrains Mono',monospace;padding:8px;white-space:pre;overflow:hidden;position:relative}
+.sc b{color:#9BE0A0;font-weight:400}
+.run{position:absolute;right:8px;bottom:8px;background:#6BCB77;color:#14213D;border-radius:50%;width:30px;height:30px;display:grid;place-items:center;font-size:12px;animation:pulse 1.4s infinite}
+@keyframes pulse{50%{transform:scale(1.15)}}
+.file{display:flex;align-items:center;gap:10px;font:700 18px 'JetBrains Mono',monospace}
+@media(prefers-reduced-motion:reduce){.r{transition:opacity .2s;transform:none!important}.bx.on,.logo.on,.run,.cur,#wipe.go,.stage.go,#ttl.go,.on .ty,.on .ck::after{animation:none}.ty{width:auto}.dl{opacity:1}}
+</style>
+</head>
+<body>
+<div id="ov"><h1>Belajar Python</h1><p>Dua belas bagian animasi dengan narasi suara. Nyalakan suara perangkatmu, lalu tekan mulai.</p><button id="go">Mulai</button></div>
+<div class="app">
+<header><h1 id="ttl">Apa itu Python?</h1><span id="cnt"></span></header>
+<div class="dots" id="dots"></div>
+<div class="sw"><div class="stage"><div class="code" id="code"></div><div class="viz" id="viz"></div></div><div id="wipe"></div></div>
+<p id="cap" aria-live="polite"></p>
+<div class="ctl">
+<button id="bk">Mundur</button><button id="pl" class="p">Jeda</button><button id="fw">Maju</button><button id="mu">Suara: aktif</button>
+</div>
+</div>
+<script>
+const R=(s,h,d=0,c='')=>`<div class="r ${c}" data-s="${s}" style="--d:${d}">${h}</div>`;
+const L=(s,h)=>R(s,h,0,'l');
+const B=(s,h,d=0,c='')=>R(s,h,d,'bx '+c);
+const PY=w=>`<svg viewBox="0 0 64 64" width="${w}" height="${w}" aria-hidden="true"><rect x="8" y="6" width="34" height="26" rx="10" fill="#3776AB"/><rect x="22" y="32" width="34" height="26" rx="10" fill="#FFD43B"/><circle cx="19" cy="15" r="3" fill="#fff"/><circle cx="45" cy="49" r="3" fill="#14213D"/></svg>`;
+const WIN=(t,h,c='')=>`<div class="win"><div class="wb"><span></span><span></span><span></span><em>${t}</em></div><div class="wc ${c}">${h}</div></div>`;
+const PH=(c,h)=>`<div class="ph ${c}"><div class="nt"></div><div class="sc">${h}</div></div>`;
+function anim(d){const r=document.documentElement.style;r.setProperty('--dx',d*50+'px');r.setProperty('--dir',d);document.querySelectorAll('.stage,#wipe,#ttl').forEach(e=>{e.classList.remove('go');void e.offsetWidth;e.classList.add('go')})}
+const S=[
+{t:'Apa itu Python?',n:[
+'Python adalah bahasa pemrograman tingkat tinggi yang dirancang agar kode mudah dibaca, hampir seperti menulis kalimat biasa.',
+'Contohnya, untuk menampilkan tulisan di layar, kamu cukup menulis satu baris saja.',
+'Perintah print mencetak teks ke layar, dan hasilnya langsung muncul saat program dijalankan.',
+'Python dipakai di banyak bidang, mulai dari website, analisis data, kecerdasan buatan, sampai otomatisasi tugas sehari-hari.'],
+c:L(1,'print(<b>"Halo, dunia!"</b>)')+L(2,'<span class="o">Halo, dunia!</span>'),
+v:R(0,PY(84),0,'logo')+'<div class="grid">'+['Website','Analisis data','Kecerdasan buatan','Otomasi tugas'].map((x,j)=>B(3,'<strong style="font-size:20px">'+x+'</strong>',j,j==2?'hl':'')).join('')+'</div>'},
+{t:'Sejarah dan filosofi',n:[
+'Python dibuat oleh Guido van Rossum dan pertama kali dirilis pada tahun 1991.',
+'Namanya bukan dari ular, melainkan dari grup komedi Inggris bernama Monty Python.',
+'Versi besar berikutnya, Python 2 dan Python 3, hadir pada tahun 2000 dan 2008. Kini yang dipakai semua orang adalah Python 3.',
+'Filosofinya sederhana: kode yang jelas lebih baik daripada kode yang rumit, dan keterbacaan itu penting.',
+'Karena itu, Python memakai lekukan baris untuk menandai blok kode, bukan tanda kurung kurawal.'],
+c:L(3,'<span class="cm"># Sederhana lebih baik daripada rumit</span>')+L(4,'<i>if</i> <u>1991</u> &lt; <u>2008</u>:')+L(4,'    print(<b>"lekukan itu penting"</b>)'),
+v:B(0,'<strong>1991</strong>Guido van Rossum merilis Python<small class="r" data-s="1">Nama dari grup komedi Monty Python</small>')+B(2,'<strong>2000</strong>Python 2')+B(2,'<strong>2008</strong>Python 3, versi yang dipakai sekarang',1,'hl')},
+{t:'Memasang Python di PC',n:[
+'Di komputer, langkah pertama adalah memasang Python dari situs resmi python.org.',
+'Di Windows, unduh installer, jalankan, lalu centang kotak Add python.exe to PATH sebelum menekan Install Now. Centang ini penting agar Python bisa dipanggil dari terminal.',
+'Di macOS, unduh installer dari python.org, atau pakai Homebrew dengan perintah brew install python. Di Linux, Python biasanya sudah ada, dan kalau belum, pasang dengan perintah apt install python3.',
+'Setelah itu, buka terminal atau Command Prompt dan periksa versinya. Di macOS dan Linux, gunakan python3 sebagai pengganti python. Jika nomor versi muncul, berarti Python sudah siap.'],
+c:L(1,'<span class="cm"># Windows: centang "Add to PATH"</span>')+L(2,'<span class="cm"># macOS</span>')+L(2,'brew install python')+L(2,'<span class="cm"># Linux (Debian/Ubuntu)</span>')+L(2,'sudo apt install python3')+L(3,'python --version')+L(3,'<span class="o">Python 3.x.x</span>'),
+v:R(1,WIN('Installer Python','<div><span class="ck"></span>Add python.exe to PATH</div><div class="btn">Install Now</div>','lt'))+'<div class="row">'+B(2,'<small>macOS</small>brew install python')+B(2,'<small>Linux</small>apt install python3',1)+'</div>'+R(3,WIN('Terminal','<span class="cm">$</span> <span class="ty" style="--n:16">python --version</span><br><span class="o dl">Python 3.x.x</span><span class="cur"></span>'))},
+{t:'Menjalankan program Python',n:[
+'Ada dua cara menjalankan Python. Cara pertama adalah mode interaktif, atau REPL, untuk mencoba kode baris demi baris.',
+'Ketik python di terminal, lalu tulis kode setelah tanda tiga panah. Hasilnya langsung muncul. Keluar dengan perintah exit.',
+'Cara kedua adalah menyimpan kode dalam file berakhiran titik py, misalnya halo.py, memakai editor seperti Notepad atau VS Code.',
+'Lalu jalankan file itu dari terminal dengan perintah python diikuti nama file. Di macOS dan Linux, pakai python3.'],
+c:L(1,'<span class="cm">$</span> python')+L(1,'&gt;&gt;&gt; <u>2</u> + <u>3</u>')+L(1,'<span class="o">5</span>')+L(1,'&gt;&gt;&gt; exit()')+L(2,'<span class="cm"># isi file halo.py</span>')+L(2,'print(<b>"Halo, Python!"</b>)')+L(3,'<span class="cm">$</span> python halo.py')+L(3,'<span class="o">Halo, Python!</span>'),
+v:R(1,WIN('Python REPL','<span class="cm">$</span> python<br>&gt;&gt;&gt; <span class="ty" style="--n:5">2 + 3</span><br><span class="o dl">5</span><span class="cur"></span>'))+B(2,PY(30)+'<span>halo.py</span>',0,'file')+R(3,WIN('Terminal','<span class="cm">$</span> <span class="ty" style="--n:14">python halo.py</span><br><span class="o dl">Halo, Python!</span>'))},
+{t:'Python di HP: Android dan iOS',n:[
+'Di ponsel, kamu tidak memasang Python resmi seperti di komputer, melainkan memakai aplikasi yang sudah menyertakan Python.',
+'Di Android, pilihan yang mudah adalah Pydroid 3 dari Play Store. Kamu mengetik kode, menekan tombol putar, dan hasilnya tampil di layar. Pengguna yang suka terminal bisa memakai Termux, lalu menjalankan perintah pkg install python.',
+'Di iPhone dan iPad, ada aplikasi seperti Pythonista, Pyto, atau a-Shell dari App Store. Semuanya menyediakan editor dan penjalan kode langsung di perangkat.',
+'Kalau tidak ingin memasang apa pun, buka Google Colab di browser. Dengan akun Google, kamu bisa menulis dan menjalankan Python di perangkat apa saja.'],
+c:L(1,'<span class="cm"># Termux (Android)</span>')+L(1,'pkg install python')+L(1,'python halo.py')+L(2,'<span class="cm"># a-Shell (iOS)</span>')+L(2,'python3 halo.py')+L(3,'<span class="cm"># Colab: tanpa instal</span>'),
+v:'<div class="row" style="justify-content:center;gap:16px">'+R(1,PH('','<span class="cm">Pydroid 3</span><br>print(<b>"Halo"</b>)<br><br><span class="o">Halo</span><div class="run">&#9654;</div>')+'<h4 style="text-align:center">Android</h4>')+R(2,PH('ios','<span class="cm">Pyto</span><br>print(<b>"Halo"</b>)<br><br><span class="o">Halo</span><div class="run">&#9654;</div>')+'<h4 style="text-align:center">iPhone</h4>',1)+'</div>'+B(3,'<small>Semua perangkat</small>Google Colab di browser',0,'hl')},
+{t:'Variabel dan tipe data',n:[
+'Variabel adalah wadah bernama untuk menyimpan data. Di Python, kamu tidak perlu menulis tipe datanya lebih dulu.',
+'Tanda sama dengan memasukkan sebuah nilai ke dalam variabel.',
+'Tipe yang paling umum ada empat: int untuk bilangan bulat, float untuk bilangan desimal, str untuk teks, dan bool untuk benar atau salah.',
+'Python menentukan tipenya sendiri, sehingga kamu bisa memeriksanya dengan fungsi type.'],
+c:L(1,'nama = <b>"Budi"</b>')+L(1,'umur = <u>17</u>')+L(1,'tinggi = <u>1.65</u>')+L(1,'pintar = <i>True</i>')+L(3,'print(type(umur))')+L(3,'<span class="o">&lt;class \'int\'&gt;</span>'),
+v:'<div class="grid">'+[['str','"Budi"'],['int','17'],['float','1.65'],['bool','True']].map((x,j)=>B(2,'<small>'+x[0]+'</small><strong>'+x[1]+'</strong>',j,j==1?'hl':'')).join('')+'</div>'},
+{t:'Percabangan',n:[
+'Percabangan membuat program bisa mengambil keputusan, tergantung pada suatu kondisi.',
+'Kata if memeriksa kondisi. Jika benar, blok kode di bawahnya dijalankan. Di sini nilainya 75, jadi kondisi pertama salah.',
+'Kata elif menambah kondisi lain, dan else dijalankan jika semua kondisi sebelumnya salah. Karena 75 lebih besar dari 60, hasilnya Lulus.',
+'Perhatikan titik dua di akhir baris dan lekukan di bawahnya. Keduanya wajib di Python.'],
+c:L(1,'nilai = <u>75</u>')+L(1,'<i>if</i> nilai &gt;= <u>80</u>:')+L(1,'    print(<b>"Sangat baik"</b>)')+L(2,'<i>elif</i> nilai &gt;= <u>60</u>:')+L(2,'    print(<b>"Lulus"</b>)')+L(2,'<i>else</i>:')+L(2,'    print(<b>"Ulangi"</b>)')+L(2,'<span class="o">Lulus</span>'),
+v:B(1,'<small>if</small>nilai &ge; 80: salah',0,'dim')+B(2,'<small>elif</small>nilai &ge; 60: benar, dijalankan',0,'hl')+B(2,'<small>else</small>tidak diperiksa',1,'dim')},
+{t:'Perulangan',n:[
+'Perulangan menjalankan kode yang sama berulang kali, tanpa perlu kamu menyalinnya.',
+'Perulangan for berjalan satu per satu pada urutan data, misalnya angka dari satu sampai lima.',
+'Fungsi range membuat urutan angka itu, dan angka batas akhirnya tidak ikut dihitung.',
+'Perulangan while terus berjalan selama kondisinya masih benar, jadi pastikan kondisinya suatu saat menjadi salah.'],
+c:L(1,'<i>for</i> i <i>in</i> range(<u>1</u>, <u>6</u>):')+L(1,'    print(i)')+L(3,'n = <u>3</u>')+L(3,'<i>while</i> n &gt; <u>0</u>:')+L(3,'    print(n)')+L(3,'    n -= <u>1</u>'),
+v:R(1,'<h4>for: 1 sampai 5</h4>')+'<div class="row">'+[1,2,3,4,5].map((n,j)=>B(1,n,j+1,'sq')).join('')+'</div>'+R(3,'<h4>while: hitung mundur</h4>')+'<div class="row">'+[3,2,1].map((n,j)=>B(3,n,j+1,'sq hl')).join('')+'</div>'},
+{t:'Fungsi',n:[
+'Fungsi adalah kumpulan perintah yang diberi nama, sehingga bisa dipakai ulang kapan saja.',
+'Kita membuatnya dengan kata def, lalu nama fungsi, dan parameter di dalam tanda kurung.',
+'Kata return mengembalikan hasil ke tempat fungsi dipanggil.',
+'Saat dipanggil dengan angka 3 dan 4, fungsi ini menghasilkan 7.'],
+c:L(1,'<i>def</i> tambah(a, b):')+L(2,'    <i>return</i> a + b')+L(3,'hasil = tambah(<u>3</u>, <u>4</u>)')+L(3,'print(hasil)')+L(3,'<span class="o">7</span>'),
+v:'<div class="flow">'+B(3,'3, 4')+R(3,'&rarr;',1)+B(1,'tambah(a, b)',0,'hl')+R(3,'&rarr;',2)+B(3,'7',3)+'</div>'},
+{t:'List, tuple, dan dictionary',n:[
+'Untuk menyimpan banyak data sekaligus, Python punya struktur data bawaan.',
+'List adalah daftar berurutan yang bisa diubah. Isinya diakses dengan nomor indeks yang dimulai dari nol.',
+'Tuple mirip list, tetapi tidak bisa diubah setelah dibuat.',
+'Dictionary menyimpan pasangan kunci dan nilai, jadi kamu mengambil data lewat namanya, bukan nomornya.'],
+c:L(1,'warna = [<b>"merah"</b>, <b>"biru"</b>]')+L(1,'print(warna[<u>0</u>])')+L(2,'titik = (<u>3</u>, <u>5</u>)')+L(3,'siswa = {<b>"nama"</b>: <b>"Budi"</b>, <b>"umur"</b>: <u>17</u>}')+L(3,'print(siswa[<b>"nama"</b>])'),
+v:B(1,'<small>list, bisa diubah</small><span class="ce"><small>0</small>merah</span><span class="ce"><small>1</small>biru</span>')+B(2,'<small>tuple, tetap</small><span class="ce">3</span><span class="ce">5</span>')+B(3,'<small>dictionary, kunci dan nilai</small><span class="ce"><small>nama</small>Budi</span><span class="ce"><small>umur</small>17</span>',0,'hl')},
+{t:'Class dan objek',n:[
+'Python mendukung pemrograman berorientasi objek.',
+'Class adalah cetak biru, sedangkan objek adalah hasil cetakan dari cetak biru itu.',
+'Di dalam class, metode init menyiapkan data awal, dan self merujuk ke objek yang sedang dipakai.',
+'Dari satu class Kucing, kita bisa membuat banyak objek dengan nama berbeda, dan masing-masing bisa mengeong.'],
+c:L(1,'<i>class</i> Kucing:')+L(2,'    <i>def</i> __init__(self, nama):')+L(2,'        self.nama = nama')+L(3,'    <i>def</i> mengeong(self):')+L(3,'        print(self.nama, <b>"mengeong"</b>)')+L(3,'tom = Kucing(<b>"Tom"</b>)')+L(3,'mimi = Kucing(<b>"Mimi"</b>)')+L(3,'tom.mengeong()')+L(3,'<span class="o">Tom mengeong</span>'),
+v:B(1,'<small>class</small>Kucing: cetak biru',0,'hl')+'<div class="row">'+B(3,'<small>objek</small>tom',0)+B(3,'<small>objek</small>mimi',1)+'</div>'},
+{t:'Library dan langkah berikutnya',n:[
+'Kekuatan besar Python datang dari ekosistem library, atau pustakanya.',
+'Dengan perintah pip install, kamu bisa memasang pustaka dari ratusan ribu paket yang tersedia.',
+'NumPy dan Pandas untuk data, Django dan Flask untuk web, serta TensorFlow dan PyTorch untuk kecerdasan buatan.',
+'Untuk terus maju, tulis program kecil setiap hari, lalu buat proyek sederhana. Selamat belajar!'],
+c:L(1,'<span class="cm">$</span> pip install pandas')+L(2,'<i>import</i> pandas <i>as</i> pd')+L(3,'<span class="cm"># tulis program kecil setiap hari</span>'),
+v:B(2,'<small>Data</small>NumPy, Pandas')+B(2,'<small>Web</small>Django, Flask',1)+B(2,'<small>Kecerdasan buatan</small>TensorFlow, PyTorch',2)+R(3,PY(70),0,'logo')+R(3,'Selamat belajar!',1,'fin')}
+];
+const $=s=>document.querySelector(s),sp='speechSynthesis' in window;
+let i=0,k=0,on=false,mute=false,tk=0,tm,V;
+function pickV(){if(sp)V=speechSynthesis.getVoices().find(v=>/^id/i.test(v.lang))}
+if(sp){pickV();speechSynthesis.onvoiceschanged=pickV}
+$('#dots').innerHTML=S.map((s,j)=>`<button aria-label="Bagian ${j+1}: ${s.t}" data-j="${j}"></button>`).join('');
+function load(n){anim(n>=i?1:-1);i=n;k=0;$('#ttl').textContent=S[n].t;$('#code').innerHTML=S[n].c;$('#viz').innerHTML=S[n].v;$('#cnt').textContent=(n+1)+' / '+S.length;
+document.querySelectorAll('#dots button').forEach((b,j)=>b.className=j==n?'a':j<n?'d':'');show()}
+function show(){document.querySelectorAll('.r').forEach(e=>e.classList.toggle('on',+e.dataset.s<=k));$('#cap').textContent=S[i].n[k]}
+function sync(){$('#pl').textContent=on?'Jeda':'Lanjut';$('#mu').textContent='Suara: '+(mute?'mati':'aktif')}
+function say(){clearTimeout(tm);if(sp)speechSynthesis.cancel();const t=++tk;show();if(!on)return;
+const x=S[i].n[k],fin=()=>{if(t!==tk||!on)return;clearTimeout(tm);nxt()},wait=()=>{tm=setTimeout(fin,x.length*70+900)};
+if(sp&&!mute){const u=new SpeechSynthesisUtterance(x);u.lang='id-ID';if(V)u.voice=V;u.rate=.95;u.onend=fin;u.onerror=()=>{if(t===tk)wait()};speechSynthesis.speak(u);tm=setTimeout(fin,x.length*140+4000)}else wait()}
+function nxt(){if(k<S[i].n.length-1){k++;say()}else if(i<S.length-1){load(i+1);say()}else{on=false;sync()}}
+function tog(){if(!on&&i==S.length-1&&k==S[i].n.length-1){load(0)}on=!on;if(on)say();else{tk++;clearTimeout(tm);if(sp)speechSynthesis.cancel()}sync()}
+function fw(){if(i<S.length-1){load(i+1);say()}}
+function bk(){load(k>=2?i:Math.max(0,i-1));say()}
+$('#pl').onclick=tog;$('#fw').onclick=fw;$('#bk').onclick=bk;
+$('#mu').onclick=()=>{mute=!mute;sync();say()};
+$('#dots').onclick=e=>{const j=e.target.dataset.j;if(j!=null){load(+j);say()}};
+$('#go').onclick=()=>{$('#ov').remove();on=true;sync();load(0);say()};
+document.addEventListener('keydown',e=>{if(e.code=='Space'&&!$('#ov')){e.preventDefault();tog()}if(e.key=='ArrowRight')fw();if(e.key=='ArrowLeft')bk()});
+load(0);sync();
+</script>
+</body>
+</html>
